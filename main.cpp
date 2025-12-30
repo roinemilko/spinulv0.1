@@ -16,6 +16,7 @@ int main(void) {
     Params params;
     bool start = false;
     bool found_ground_state = false;
+    float pulse_start_time = 0.0f;
     std::vector<Particle> particles;
     std::vector<float> energyPlot;
     std::vector<float> spinZPlot;
@@ -43,7 +44,7 @@ int main(void) {
                         DrawArrow(&particles[i], &params);
                     }
 					DrawAxes(&params);
-                    if (params.external_field > 0) {DrawFieldVisual(&params);}
+                    if (params.ext_field_on) {DrawFieldVisual(&params);}
                 EndShaderMode();
                 EndMode3D();
                 MinimizeEnergy(particles, &params);
@@ -59,6 +60,8 @@ int main(void) {
                 ImGui::SliderFloat("J1", &params.J1, -5.0f, 5.0f);
                 ImGui::SliderFloat("J2", &params.J2, -5.0f, 5.0f);
                 ImGui::SliderFloat("External field", &params.external_field, 0.0f, 15.0f);
+                ImGui::SliderFloat("Pulse lenght:", &params.ext_field_pulse_lenght, 1.0f, 5.0f);
+                ImGui::SliderFloat("Field radius", &params.external_field_radius, 5.0f, 10.0f);
 			    ImGui::InputInt("Number of particles", &params.n_of_particles);
                 if (ImGui::Button("Start")) {
                     start = !start;
@@ -75,7 +78,7 @@ int main(void) {
             if (start) {
                 float current_energy = getTotalEnergy(particles, &params);
                 if (energyPlot.size() > 0 && abs(current_energy - energyPlot.back()) < 0.001f && !found_ground_state) {
-                    printf("Found ground state! Pure ground state energy: %.4f\n Removing precession damping...\n", current_energy);
+                    printf("Found ground state! Removed precession damping.\n");
                     params.damping = 0.0005f;
                     params.dt_ps = 0.01f;
                     found_ground_state = true;
@@ -97,6 +100,17 @@ int main(void) {
                     ImGui::Begin("z components of spin");
                         ImGui::PlotLines("z components", spinZPlot.data(), params.n_of_particles, 0, NULL, FLT_MAX, FLT_MAX, ImVec2(0, 150));
                     ImGui::End();
+                    ImGui::Begin("Create disturbance");
+                        if (ImGui::Button("Magnetic pulse")) {
+                            pulse_start_time = params.current_time;
+                            params.ext_field_on = true;
+                        }
+                        ImGui::Text("Field status: %i", params.ext_field_on);
+                    ImGui::End();
+                    if (params.ext_field_on && (params.current_time - pulse_start_time > params.ext_field_pulse_lenght) ) {
+                        params.ext_field_on = false;
+                        printf("Added magnetic pulse of lenght %f.2!\n", params.ext_field_pulse_lenght);
+                    }
                 }
             }
             rlImGuiEnd();

@@ -11,12 +11,14 @@ struct Params {
     Color particle_color = MAROON;
     Color spin_color = BLUE;
     int n_of_particles = 10; // the number of sites in the chain
-    float dt_ps = 0.05f; // lenght of time step in integrator
-    float current_time = 0.0f;
+    float dt_ps = 0.05f; // lenght of time step in integrator (picoseconds)
+    float current_time = 0.0f; // picoseconds
     float J1 = -1.6f; // nearest neighbour coupling factor (meV)
     float J2 = 0.44f; // next-nearest neighbour coupling factor (meV)
     float external_field = 0; // mT
     float external_field_radius = 5.0f;
+    float ext_field_pulse_lenght = 5; // picoseconds
+    bool ext_field_on = false;
     const float hbar = 0.6582; // meV * picoseconds
     float damping = 0.4f; // the damping coefficient
     float gm_ratio = 2;

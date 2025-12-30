@@ -26,7 +26,7 @@ Vector3 CalculateH_eff(int i, const std::vector<Particle>& particles, Params* pa
     H = Vector3Add(H, Vector3Scale(J2, -params->J2));
 
     // Zeeman term
-    if (particles[i].pos.x >= (50.0f - params->external_field_radius) && particles[i].pos.x <= (50.0f + params->external_field_radius)) {
+    if (particles[i].pos.x >= (50.0f - params->external_field_radius) && particles[i].pos.x <= (50.0f + params->external_field_radius) && params->ext_field_on) {
         Vector3 zeemann = Vector3Scale((Vector3) {0.0f, 0.0f, params->external_field}, params->gm_ratio * params->bohr_magneton);
         H = Vector3Add(H, zeemann);
     }
@@ -96,7 +96,9 @@ float getTotalEnergy(const std::vector<Particle>& particles, Params* params) {
 
         result += params->J1 * Vector3DotProduct(S, handle_edges(i + 1));
         result += params->J2 * Vector3DotProduct(S, handle_edges(i + 2));
-        result -= params->external_field * S.z;
+        if (params->ext_field_on) {
+            result -= params->external_field * S.z;
+        }
     }
     return result;
 }
