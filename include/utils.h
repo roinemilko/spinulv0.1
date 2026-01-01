@@ -40,7 +40,7 @@ void DrawFieldVisual(Params* params);
 
 // physics
 Vector3 CalculateH_eff(int i, const std::vector<Particle>& particles, Params* params);
-void MinimizeEnergy(std::vector<Particle>& particles, Params* params);
+void MinimizeEnergy(std::vector<Particle>& particles, Params* params);   
 float getTotalEnergy(const std::vector<Particle>& particles, Params* params);
 
 #endif

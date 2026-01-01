@@ -20,10 +20,12 @@ SOURCES = $(wildcard $(SRC_DIR)/*.cpp) \
 OBJECTS = $(addprefix $(BUILD_DIR)/, $(SOURCES:.cpp=.o))
 LIBS = -lglfw -lGLEW -lGL -pthread $(RAYLIB_PCK)
 
-all: main run
+TARGET = $(BUILD_DIR)/main
 
-main: $(OBJECTS)
-	g++ $(OBJECTS) -o main $(LIBS)
+all: $(TARGET) run
+
+$(TARGET): $(OBJECTS)
+	g++ $(OBJECTS) -o $(TARGET) $(LIBS)
 
 $(BUILD_DIR)/%.o: %.cpp
 	@mkdir -p $(dir $@)
@@ -33,4 +35,4 @@ clean:
 	rm -f $(OBJECTS) main *.o src/*.o
 
 run:
-	./main
+	./$(BUILD_DIR)/main
