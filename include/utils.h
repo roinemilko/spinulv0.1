@@ -1,9 +1,10 @@
+#ifndef UTILS_H
+#define UTILS_H
+
 #include "raylib.h"
 #include "raymath.h"
 #include <vector>
 
-// main function
-int main();
 
 // simulation structs
 struct Params {
@@ -41,3 +42,5 @@ void DrawFieldVisual(Params* params);
 Vector3 CalculateH_eff(int i, const std::vector<Particle>& particles, Params* params);
 void MinimizeEnergy(std::vector<Particle>& particles, Params* params);
 float getTotalEnergy(const std::vector<Particle>& particles, Params* params);
+
+#endif

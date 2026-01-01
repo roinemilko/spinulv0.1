@@ -1,11 +1,11 @@
 #include <cstdio>
 #include <vector>
-#include "stdlib.h"
+#include <cstdlib>
 #include "raylib.h"
 #include "imgui.h"
 #include "rlImGui.h"
 #include "utils.h"
-#include "math.h"
+#include <math.h>
 
 
 int main(void) {

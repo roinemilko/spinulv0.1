@@ -11,12 +11,10 @@ uniform vec3 viewPos;
 void main() {
     vec3 normal = normalize(fragNormal);
     vec3 lightDir = normalize(lightPos - fragPosition);
-    
-    // Ambient light
+   
     float ambientStrength = 0.3;
     vec3 ambient = ambientStrength * vec3(1.0, 1.0, 1.0);
     
-    // Diffuse light (The part that makes it look 3D)
     float diff = max(dot(normal, lightDir), 0.0);
     vec3 diffuse = diff * vec3(1.0, 1.0, 1.0);
     

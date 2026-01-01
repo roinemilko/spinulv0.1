@@ -1,29 +1,36 @@
-D_DIR = dependencies/imgui
-RAYLIB_DIR = dependencies/raylib/src
-BRIDGE_DIR = dependencies/rlImGui
-INCLUDES = -I$(D_DIR) -I$(D_DIR)/backends -I$(RAYLIB_DIR) -I$(BRIDGE_DIR)
+SRC_DIR = src
+IMGUI = dependencies/imgui
+RAYLIB = dependencies/raylib/src
 RAYLIB_PCK = lib/libraylib.a
+BRIDGE = dependencies/rlImGui
+HEADERS = include
 
-SOURCES = main.cpp utils.cpp physics.cpp \
-	$(D_DIR)/imgui.cpp \
-	$(D_DIR)/imgui_draw.cpp \
-	$(D_DIR)/imgui_widgets.cpp \
-	$(D_DIR)/imgui_tables.cpp \
-	$(BRIDGE_DIR)/rlImGui.cpp
+BUILD_DIR = build
 
-OBJECTS = $(SOURCES:.cpp=.o)
-LIBS = -lglfw -lGL -lGLEW -pthread $(RAYLIB_PCK)
+
+INCLUDES = -I$(HEADERS) -I$(SRC_DIR) -I$(IMGUI) -I$(RAYLIB) -I$(BRIDGE)
+
+SOURCES = $(wildcard $(SRC_DIR)/*.cpp) \
+        $(IMGUI)/imgui.cpp \
+        $(IMGUI)/imgui_draw.cpp \
+        $(IMGUI)/imgui_widgets.cpp \
+        $(IMGUI)/imgui_tables.cpp \
+        $(BRIDGE)/rlImGui.cpp
+
+OBJECTS = $(addprefix $(BUILD_DIR)/, $(SOURCES:.cpp=.o))
+LIBS = -lglfw -lGLEW -lGL -pthread $(RAYLIB_PCK)
 
 all: main run
 
 main: $(OBJECTS)
 	g++ $(OBJECTS) -o main $(LIBS)
 
-%.o: %.cpp
+$(BUILD_DIR)/%.o: %.cpp
+	@mkdir -p $(dir $@)
 	g++ -c $< -o $@ $(INCLUDES)
 
 clean:
-	rm -f $(OBJECTS) main
+	rm -f $(OBJECTS) main *.o src/*.o
 
 run:
 	./main

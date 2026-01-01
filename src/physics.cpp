@@ -1,7 +1,7 @@
 #include "utils.h"
 #include <vector>
 #include "raylib.h"
-#include "math.h"
+#include <math.h>
 
 // CALCULATE THE EFFECTIVE MAGNETIC FIELD STRENGHT OF A SITE
 // PARAMS: (index of the site), (reference to a vector of the sites), (pointer to simulation params)
