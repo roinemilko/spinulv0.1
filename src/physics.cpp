@@ -71,7 +71,7 @@ void MinimizeEnergy(std::vector<Particle>& particles, Params* params) {
         Vector3 CP = Vector3CrossProduct(S, H);
         Vector3 gilbert_damping = Vector3Scale(
             Vector3CrossProduct(S, CP),
-            -gamma * check_damping(idx)
+            -gamma * damping
         );
         Vector3 dS = Vector3Add(torque, gilbert_damping);
 		return dS;
