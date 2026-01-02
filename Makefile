@@ -1,9 +1,10 @@
 SRC_DIR = src
 IMGUI = dependencies/imgui
 RAYLIB = dependencies/raylib/src
-RAYLIB_PCK = lib/libraylib.a
 BRIDGE = dependencies/rlImGui
 HEADERS = include
+
+BUILT_LIBS = $(wildcard lib/*.a)
 
 BUILD_DIR = build
 
@@ -18,7 +19,7 @@ SOURCES = $(wildcard $(SRC_DIR)/*.cpp) \
         $(BRIDGE)/rlImGui.cpp
 
 OBJECTS = $(addprefix $(BUILD_DIR)/, $(SOURCES:.cpp=.o))
-LIBS = -lglfw -lGLEW -lGL -pthread $(RAYLIB_PCK)
+LIBS = $(BUILT_LIBS) -lglfw -lGLEW -lGL -lm -ldl
 
 TARGET = $(BUILD_DIR)/main
 

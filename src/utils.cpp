@@ -3,6 +3,7 @@
 #include "utils.h"
 #include <cstdio>
 #include <random>
+#include <math.h>
 
 
 // DRAW THE SPIN ARROW IN THE ANIMATION
@@ -25,7 +26,7 @@ void InitParticles(std::vector<Particle>& particles, Params* params) {
     std::random_device rd;
     std::mt19937 gen(rd());
 
-    double mean_theta = 3.14;
+    double mean_theta = M_PI;
     double sigma_theta = 1.5;
     std::normal_distribution<double> distribution_theta(mean_theta, sigma_theta);
 
@@ -76,11 +77,4 @@ void DrawFieldVisual(Params* params) {
         8,
         Fade(GREEN, params->external_field / 15.0f)
     );
-    Vector3 arrow_start = (Vector3) { 45.0f, 7.0f, 0.0f };
-    Vector3 arrow_end = (Vector3) { 52.5f, 7.0f, 0.0f };
-    DrawLine3D(arrow_start, arrow_end, GREEN);
-
-    Vector3 tip_start = (Vector3) { 52.5f, 7.0f, 0.0f };
-    Vector3 tip_end = (Vector3) { 55.0f, 7.0f, 0.0f };
-    DrawCylinderEx(tip_start, tip_end, 1.0f, 0.0f, 8, GREEN);
 }
