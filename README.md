@@ -2,9 +2,9 @@
 A simulator to predict spin wave dispersion speed and magnon energy in frustrated Heisenberg models. Made for eduactional purposes. 
 
 ## TODO
-- Implement "DataLogger" class to measure spin and perform Fourier analysis
-- Replace Euler integration with a predictor-corrector approach to fix numerical stability
-- Python API for the finished simulation
+- Update dependencies
+- Seperate simulation step from framerate for more interesting animation
+- Python script to run the simulation and plot the resulting heatmap
 
 ## Method
 We use the Heisenberg model to describe a lattice of spins set on discrete sites such that the hamiltonian is
