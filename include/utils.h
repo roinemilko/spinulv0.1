@@ -12,7 +12,7 @@ struct Params {
     Color particle_color = MAROON;
     Color spin_color = BLUE;
     int n_of_particles = 10; // the number of sites in the chain
-    float dt_ps = 0.05f; // lenght of time step in integrator (picoseconds)
+    float dt_ps = 0.01f; // lenght of time step in integrator (picoseconds)
     float J1 = -1.6f; // nearest neighbour coupling factor (meV)
     float J2 = 0.44f; // next-nearest neighbour coupling factor (meV)
     float external_field = 0; // mT

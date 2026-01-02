@@ -33,7 +33,7 @@ int main(void) {
     camera.up = (Vector3){ 0.0f, 1.0f, 0.0f };
     camera.fovy = 45.0f;
     camera.projection = CAMERA_PERSPECTIVE;
-    SetTargetFPS(120);
+    SetTargetFPS(60);
     Shader lightShader = LoadShader("shaders/lighting.vs", "shaders/lighting.fs");
 
     while (!WindowShouldClose())
@@ -73,7 +73,7 @@ int main(void) {
                     start = !start;
 				    if (start) {
 					    InitParticles(particles, &params);
-                        spinZPlot.reserve(params.n_of_particles);
+                        spinZPlot.resize(params.n_of_particles, 0.0f);
                         printf("Looking for ground state...\n");
 				    }
                 }
@@ -85,12 +85,22 @@ int main(void) {
             if (start) {
                 // Energy plot
                 float current_energy = getTotalEnergy(particles, &params);
-                if (energyPlot.size() > 0 && abs(current_energy - energyPlot.back()) < 0.001f && !found_ground_state) {
-                    printf("Found ground state! Removed precession damping.\n");
-                    params.damping = 0.0003f;
-                    params.dt_ps = 0.0001f;
-                    found_ground_state = true;
-                }
+
+				if (energyPlot.size() > 100 && !found_ground_state) {
+					float sum = 0.0f;
+					for (int i = 1; i <= 10; i++) {
+						sum += abs(energyPlot[energyPlot.size() - i] - energyPlot[energyPlot.size() - i - 1]);
+					}
+					printf("Sum: %f\n", sum);
+					if (sum < 0.005f) {
+	                    printf("Found ground state! Removed precession damping.\n");
+		                params.damping = 0.0003f;
+    	                params.dt_ps = 0.01f;
+	                    found_ground_state = true;
+					}
+
+				}
+
                 energyPlot.push_back(current_energy);
                 ImGui::Begin("Energy");
                     ImGui::Text("Total energy: %.4f meV", current_energy);

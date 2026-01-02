@@ -41,43 +41,66 @@ void MinimizeEnergy(std::vector<Particle>& particles, Params* params) {
     float dt = params->dt_ps;
     int N = params->n_of_particles;
 
-    std::vector<Vector3> new_spins(N);
+    std::vector<Particle> predictions = particles;
+	std::vector<Vector3> derivatives(N);
+	std::vector<Vector3> new_spins(N);
 
-    // Calculate new spins after time step
-    for (int i = 0; i < N; i++) {
-
-        // Linear "sponge" damping at the ends of the chain to reduce artificial constructive interference
-        float local_damping;
-        int sponge_width = params->sponge_width;
+    // Linear "sponge" damping at the ends of the chain to reduce artificial constructive interference
+	auto check_damping = [&](int idx) {
+		float local_damping;
+		int sponge_width = params->sponge_width;
         float max_damping = 0.5f;
 
-        if (i <= sponge_width) {
-            float how_close = ((float) i) / ((float) sponge_width);
+        if (idx <= sponge_width) {
+            float how_close = ((float) idx) / ((float) sponge_width);
             local_damping = damping + (max_damping * (1-how_close));
         }
-        else if (i >= N - sponge_width) {
-            float how_close = ((float) (N - i)) / ((float) sponge_width);
+        else if (idx >= N - sponge_width) {
+            float how_close = ((float) (N - 1 - idx)) / ((float) sponge_width);
             local_damping = damping + (max_damping * (1-how_close));
         }
+		else {
+			local_damping = damping;
+		}
+		return local_damping;
+	};
 
-        Vector3 H = CalculateH_eff(i, particles, params);
-        Vector3 S = particles[i].spin;
-
-        // Precession term
+	// Helper to compute derivative
+	auto compute_derivative = [&](Vector3 H, Vector3 S, int idx) {
         Vector3 torque = Vector3Scale(Vector3CrossProduct(S, H), -gamma);
-
-        // Damping term
         Vector3 CP = Vector3CrossProduct(S, H);
         Vector3 gilbert_damping = Vector3Scale(
             Vector3CrossProduct(S, CP),
-            -gamma * local_damping
+            -gamma * check_damping(idx)
         );
-
         Vector3 dS = Vector3Add(torque, gilbert_damping);
-        new_spins[i] = Vector3Normalize(Vector3Add(S, Vector3Scale(dS, dt)));
-    }
-    // Update spins
-    for (int i = 0; i < N; i++) { particles[i].spin = new_spins[i]; }
+		return dS;
+	};
+
+    // Calculate new spins after time step
+    for (int i = 0; i < N; i++) {
+        Vector3 H = CalculateH_eff(i, particles, params);
+        Vector3 S = particles[i].spin;
+        Vector3 dS = compute_derivative(H, S, i);
+
+		derivatives[i] = dS;
+        predictions[i].spin = Vector3Normalize(Vector3Add(S, Vector3Scale(dS, dt)));
+    };
+
+	// Calculate derivative after another timestep and average them
+	for (int i = 0; i < N; i++) {
+		Vector3 H = CalculateH_eff(i, predictions, params);
+        Vector3 S = predictions[i].spin;
+		Vector3 dS = compute_derivative(H, S, i);
+
+		Vector3 avg = Vector3Scale(Vector3Add(derivatives[i], dS), 0.5f);
+		new_spins[i] = Vector3Normalize(Vector3Add(particles[i].spin, Vector3Scale(avg, dt)));
+	};
+
+	// update spins
+	for (int i = 0; i < N; i++) {
+		particles[i].spin = new_spins[i];
+	}
 }
 
 // CALCULATE TOTAL ENERGY OF THE SYSTEM
