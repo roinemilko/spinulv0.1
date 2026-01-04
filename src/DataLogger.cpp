@@ -41,8 +41,35 @@ void DataLogger::analyze(Params* params) {
 	}
 
     // Initialize the input
-	// (hanning window to reduce leakage)
 	printf("Plam finished! Initializing the input... \n");
+
+	// Substract mean w/respect to time and space to reduce noise
+
+	#pragma omp parallel for
+	for (int p = 0; p < N; p++) {
+		float sum = 0.0f;
+		for (int t = 0; t < T; t++) {
+			sum += _data[t * N + p];
+		}
+		float mean = sum / (float)T;
+		for (int t = 0; t < T; t++) {
+			_data[t * N + p] -= mean;
+		}
+	}
+
+	#pragma omp parallel for
+	for (int t = 0; t  < T; t++) {
+		float sum = 0.0f;
+		for (int p = 0; p < N; p++) {
+			sum += _data[t * N + p];
+		}
+		float mean = sum / (float)N;
+		for (int p = 0; p < N; p++) {
+			_data[t * N + p] -= mean;
+		}
+	}
+
+	// Hanning window to reduce leakage
 	#pragma omp parallel for
     for (int t = 0; t < T; t++) {
         float hanning_t = 0.5f * (1.0f - cosf( (2.0f * M_PI * t)/(float)(T-1) ) );
@@ -58,7 +85,7 @@ void DataLogger::analyze(Params* params) {
 
 	printf("Saving results...\n");
     // Print results to a csv file
-    FILE* filePtr = fopen("result.csv", "w");
+    FILE* filePtr = fopen("result2.csv", "w");
     if (filePtr == nullptr) {
         perror("Couldn't create result.csv");
     }
