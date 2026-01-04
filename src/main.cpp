@@ -119,9 +119,9 @@ int main(void) {
 						printf("Current: %f.2 -- Target: %f.2\n", sum, min_sum);
 						if (sum < min_sum) {
 		                    printf("Found ground state! Removed precession damping.\n");
-			                params.damping = 0.0001f;
+			                params.damping = 0.00001f;
 	    	                params.dt_ps = 0.001f;
-							steps_per_frame = 200;
+							steps_per_frame = 300;
 		                    found_ground_state = true;
 							current_time = 0.0f;
 						}

@@ -62,24 +62,6 @@ void MinimizeEnergy(std::vector<Particle>& particles, Params* params) {
 		}
 	}
 
-
-    // Quadratic "sponge" damping at the ends of the chain to reduce artificial constructive interference
-	auto check_damping = [&](int idx) {
-		float local_damping;
-		int sponge_width = params->sponge_width;
-        float max_damping = 0.5f;
-
-        if (idx <= sponge_width) {
-            float how_close = ((float) idx) / ((float) sponge_width);
-            local_damping = damping + (max_damping * powf(1.0f - how_close, 2));
-        }
-
-		else {
-			local_damping = damping;
-		}
-		return local_damping;
-	};
-
 	// Helper to compute derivative
 	auto compute_derivative = [&](Vector3 H, Vector3 S, int idx) {
         Vector3 torque = Vector3Scale(Vector3CrossProduct(S, H), -gamma);
@@ -116,7 +98,7 @@ void MinimizeEnergy(std::vector<Particle>& particles, Params* params) {
 
 	// update spins
 	for (int i = 0; i < N; i++) {
-		particles[i].spin = new_spins[i];
+		particles[i].spin = Vector3Normalize(new_spins[i]);
 	}
 }
 

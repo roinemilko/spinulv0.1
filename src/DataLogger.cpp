@@ -45,9 +45,10 @@ void DataLogger::analyze(Params* params) {
 	printf("Plam finished! Initializing the input... \n");
 	#pragma omp parallel for
     for (int t = 0; t < T; t++) {
-        float hanning = 0.5f * (1.0f - cosf( (2.0f * M_PI * t)/(float)(T-1) ) );
+        float hanning_t = 0.5f * (1.0f - cosf( (2.0f * M_PI * t)/(float)(T-1) ) );
         for (int p = 0; p < N; p++) {
-            in[t * N + p] = _data[t * N + p] * hanning;
+			float hanning_p = 0.5f * (1.0f - cosf( (2.0f * M_PI * p)/(float)(N-1)) );
+            in[t * N + p] = _data[t * N + p] * hanning_t * hanning_p;
         }
     }
 
@@ -61,10 +62,11 @@ void DataLogger::analyze(Params* params) {
     if (filePtr == nullptr) {
         perror("Couldn't create result.csv");
     }
+	float normalize = 1.0f / float(T*N);
     for (int t = 0; t < T; t++) {
 		for (int k = 0; k < (N / 2 + 1); k++) {
 			int idx = t * n_of_bins + k;
- 	    	float magnitude = sqrt( (out[idx][0] * out[idx][0]) + (out[idx][1] * out[idx][1]) );
+ 	    	float magnitude = sqrt( (out[idx][0] * out[idx][0]) + (out[idx][1] * out[idx][1]) ) * normalize;
 			fprintf(filePtr, "%f%s", magnitude, (k == n_of_bins - 1) ? "" : ",");
 		}
 		fprintf(filePtr, "\n");
