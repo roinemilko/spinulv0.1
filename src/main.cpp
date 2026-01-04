@@ -17,6 +17,7 @@ int main(void) {
     Params params;
     bool start = false;
     bool found_ground_state = false;
+	std::vector<Particle> ground_state;
     bool recording = false;
     float pulse_start_time = 0.0f;
     std::vector<Particle> particles;
@@ -159,6 +160,7 @@ int main(void) {
 	                            pulse_start_time = current_time;
 	                            params.ext_field_on = true;
 	                            printf("Adding magnetic pulse of lenght %f.2!\n", params.ext_field_pulse_lenght);
+								ground_state = particles;
 	                        }
 	                        ImGui::Text("Field status: %s", params.ext_field_on ? "on" : "off");
 	                    ImGui::End();
@@ -171,7 +173,7 @@ int main(void) {
 	                        int size_hint = (int) (recording_time / params.dt_ps);
 	                        rec_end_time = current_time + recording_time;
 							printf("Recording from %f.2 to %f.2...\n", current_time, current_time + recording_time);
-	                        logger = new DataLogger(size_hint);
+							logger = new DataLogger(size_hint, ground_state);
 
 	                    }
 

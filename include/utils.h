@@ -25,6 +25,7 @@ struct Params {
     float bohr_magneton = 0.05788;
     int sponge_width = 5; // the width of the "sponge" at the ends in number of sites
     float energy_resolution = 0.003f;
+    float window_param = 0.2f;
 };
 
 struct Particle {

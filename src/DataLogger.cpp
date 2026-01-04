@@ -7,14 +7,16 @@
 #include <cstdio>
 #include <math.h>
 
-DataLogger::DataLogger(int size_hint) {
+DataLogger::DataLogger(int size_hint, std::vector<Particle>& initial_state) {
     _data.reserve(size_hint);
+	start = initial_state;
 }
 
 void DataLogger::listen(std::vector<float>& data, Params* params) {
     for (int i = 0; i < params->n_of_particles; i++) {
-        _data.push_back(data[i]);
+        _data.push_back(data[i] - start[i].spin.z);
     }
+
 }
 
 void DataLogger::analyze(Params* params) {
@@ -43,39 +45,24 @@ void DataLogger::analyze(Params* params) {
     // Initialize the input
 	printf("Plam finished! Initializing the input... \n");
 
-	// Substract mean w/respect to time and space to reduce noise
+    for (int i = 0; i < (T * N); i++) {
+        in[i] = _data[i];
+    }
 
-	#pragma omp parallel for
-	for (int p = 0; p < N; p++) {
-		float sum = 0.0f;
-		for (int t = 0; t < T; t++) {
-			sum += _data[t * N + p];
-		}
-		float mean = sum / (float)T;
-		for (int t = 0; t < T; t++) {
-			_data[t * N + p] -= mean;
-		}
-	}
-
-	#pragma omp parallel for
-	for (int t = 0; t  < T; t++) {
-		float sum = 0.0f;
-		for (int p = 0; p < N; p++) {
-			sum += _data[t * N + p];
-		}
-		float mean = sum / (float)N;
-		for (int p = 0; p < N; p++) {
-			_data[t * N + p] -= mean;
-		}
-	}
-
-	// Hanning window to reduce leakage
+	// Tukey window
 	#pragma omp parallel for
     for (int t = 0; t < T; t++) {
-        float hanning_t = 0.5f * (1.0f - cosf( (2.0f * M_PI * t)/(float)(T-1) ) );
+        float window = 1.0f;
+        if (t < params->window_param * T / 2.0f) {
+            window = 0.5f * (1.0f + cosf(M_PI * (2.0f * t / (params->window_param * T) - 1.0f)));
+        }
+        else if (t > T * (1.0f - params->window_param / 2.0f)) {
+            float dist = T - 1 - t;
+            window = 0.5f * (1.0f + cosf(M_PI * (2.0f * dist / (params->window_param * T) - 1.0f)));
+        }
+
         for (int p = 0; p < N; p++) {
-			float hanning_p = 0.5f * (1.0f - cosf( (2.0f * M_PI * p)/(float)(N-1)) );
-            in[t * N + p] = _data[t * N + p] * hanning_t * hanning_p;
+            in[t * N + p] *= window;
         }
     }
 
@@ -93,7 +80,7 @@ void DataLogger::analyze(Params* params) {
     for (int t = 0; t < T; t++) {
 		for (int k = 0; k < (N / 2 + 1); k++) {
 			int idx = t * n_of_bins + k;
- 	    	float magnitude = sqrt( (out[idx][0] * out[idx][0]) + (out[idx][1] * out[idx][1]) ) * normalize;
+ 	    	float magnitude = sqrt( (out[idx][0] * out[idx][0]) + (out[idx][1] * out[idx][1]) ) * 2 * normalize;
 			fprintf(filePtr, "%f%s", magnitude, (k == n_of_bins - 1) ? "" : ",");
 		}
 		fprintf(filePtr, "\n");

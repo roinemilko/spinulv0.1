@@ -9,8 +9,9 @@
 class DataLogger {
     private:
         std::vector<float> _data;
+		std::vector<Particle>  start;
     public:
-        DataLogger(int size_hint);
+        DataLogger(int size_hint, std::vector<Particle>& initial_state);
         void listen(std::vector<float>& data, Params* params);
         void analyze(Params* params);
 };
