@@ -20,12 +20,14 @@ int main(void) {
     bool recording = false;
     float pulse_start_time = 0.0f;
     std::vector<Particle> particles;
-    std::vector<float> energyPlot;
-    std::vector<float> spinZPlot;
+    std::vector<float> energyPlot(1000);
+	int energy_plot_counter = 0;
+	std::vector<float> spinZPlot;
     float current_time = 0.0f;
     DataLogger* logger = nullptr;
     float rec_end_time = 0.0f;
 	int steps_per_frame = 1;
+	int rec_counter = 0;
 
 	// init camera for animation
     Camera3D camera = { 0 };
@@ -34,7 +36,7 @@ int main(void) {
     camera.up = (Vector3){ 0.0f, 1.0f, 0.0f };
     camera.fovy = 45.0f;
     camera.projection = CAMERA_PERSPECTIVE;
-    SetTargetFPS(60);
+    SetTargetFPS(30);
     Shader lightShader = LoadShader("shaders/lighting.vs", "shaders/lighting.fs");
 
     while (!WindowShouldClose())
@@ -46,19 +48,21 @@ int main(void) {
 
                     // Record and analyze data
                     if (rec_end_time != 0.0f) {
-                        if (current_time < rec_end_time) {
+                        if (current_time < rec_end_time && rec_counter == 100) {
                             logger->listen(spinZPlot, &params);
+							rec_counter = 0;
                         }
-                        else {
+                        else if (current_time >= rec_end_time) {
                             logger->analyze(&params);
                             printf("Simulation finished! Thank you and goodbye.\n");
 							rec_end_time = 0.0f;
 							delete logger;
 						}
+						rec_counter++;
 					}
 
 					// Increment time
-                	if (found_ground_state) {current_time += params.dt_ps;}
+					current_time += params.dt_ps;
 				}
 			}
                 // Draw the animation
@@ -85,8 +89,8 @@ int main(void) {
 	                ImGui::SliderFloat("Scale", &params.scale, 0.2f, 20.0f);
 	                ImGui::SliderFloat("J1", &params.J1, -5.0f, 5.0f);
 	                ImGui::SliderFloat("J2", &params.J2, -5.0f, 5.0f);
-	                ImGui::SliderFloat("External field", &params.external_field, 0.0f, 5.0f);
-	                ImGui::SliderFloat("Pulse lenght:", &params.ext_field_pulse_lenght, 1.0f, 5.0f);
+	                ImGui::SliderFloat("External field", &params.external_field, 0.0f, 10.0f);
+	                ImGui::SliderFloat("Pulse lenght:", &params.ext_field_pulse_lenght, 0.1f, 5.0f);
 	                ImGui::SliderFloat("Field radius", &params.external_field_radius, 5.0f, 10.0f);
 	                ImGui::SliderFloat("Energy resolution", &params.energy_resolution, 0.001f, 0.005f);
 				    ImGui::InputInt("Number of particles", &params.n_of_particles);
@@ -106,22 +110,27 @@ int main(void) {
 	            if (start) {
 	                // Energy plot
 	                float current_energy = getTotalEnergy(particles, &params);
-
-					if (energyPlot.size() > 100 && !found_ground_state) {
+					if (current_time > 2.0f && !found_ground_state) {
 						float sum = 0.0f;
 						for (int i = 1; i <= 10; i++) {
-							sum += abs(energyPlot[energyPlot.size() - i] - energyPlot[energyPlot.size() - i - 1]);
+							sum += fabsf(energyPlot[energy_plot_counter - 1] - energyPlot[energy_plot_counter - 2]);
 						}
-						if (sum < 0.005f) {
+						float min_sum = (params.n_of_particles / 100000.0f) * 5;
+						printf("Current: %f.2 -- Target: %f.2\n", sum, min_sum);
+						if (sum < min_sum) {
 		                    printf("Found ground state! Removed precession damping.\n");
-			                params.damping = 0.0003f;
+			                params.damping = 0.0001f;
 	    	                params.dt_ps = 0.001f;
-							steps_per_frame = 500;
+							steps_per_frame = 200;
 		                    found_ground_state = true;
+							current_time = 0.0f;
 						}
 					}
-
-	                energyPlot.push_back(current_energy);
+					if (energy_plot_counter == 1000) {
+						energy_plot_counter = 0;
+					}
+	                energyPlot[energy_plot_counter] = current_energy;
+					energy_plot_counter++;
 	                ImGui::Begin("Energy");
 	                    ImGui::Text("Total energy: %.4f meV", current_energy);
 	                    ImGui::Text("Current damping: %f.2", params.damping);

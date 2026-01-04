@@ -11,13 +11,13 @@ struct Params {
     float scale = 5.0f; // parameter to set the scale of the animation
     Color particle_color = MAROON;
     Color spin_color = BLUE;
-    int n_of_particles = 500; // the number of sites in the chain
+    int n_of_particles = 100; // the number of sites in the chain
     float dt_ps = 0.01f; // lenght of time step in integrator (picoseconds)
     float J1 = -1.6f; // nearest neighbour coupling factor (meV)
     float J2 = 0.44f; // next-nearest neighbour coupling factor (meV)
     float external_field = 0; // mT
     float external_field_radius = 5.0f;
-    float ext_field_pulse_lenght = 5;  // picoseconds
+    float ext_field_pulse_lenght = 0.5f;  // picoseconds
     bool ext_field_on = false;
     const float hbar = 0.6582; // meV * picoseconds
     float damping = 0.3f; // the damping coefficient

@@ -19,7 +19,7 @@ SOURCES = $(wildcard $(SRC_DIR)/*.cpp) \
         $(BRIDGE)/rlImGui.cpp
 
 OBJECTS = $(addprefix $(BUILD_DIR)/, $(SOURCES:.cpp=.o))
-LIBS = $(BUILT_LIBS) -lglfw -lGLEW -lGL -lm -ldl
+LIBS = $(BUILT_LIBS) -lglfw -lGLEW -lGL -lm -ldl -fopenmp
 
 TARGET = $(BUILD_DIR)/main
 

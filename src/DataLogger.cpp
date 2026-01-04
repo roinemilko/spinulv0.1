@@ -43,6 +43,7 @@ void DataLogger::analyze(Params* params) {
     // Initialize the input
 	// (hanning window to reduce leakage)
 	printf("Plam finished! Initializing the input... \n");
+	#pragma omp parallel for
     for (int t = 0; t < T; t++) {
         float hanning = 0.5f * (1.0f - cosf( (2.0f * M_PI * t)/(float)(T-1) ) );
         for (int p = 0; p < N; p++) {

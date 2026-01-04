@@ -44,8 +44,26 @@ void MinimizeEnergy(std::vector<Particle>& particles, Params* params) {
     std::vector<Particle> predictions = particles;
 	std::vector<Vector3> derivatives(N);
 	std::vector<Vector3> new_spins(N);
+	std::vector<float> damping_profile;
 
-    // Linear "sponge" damping at the ends of the chain to reduce artificial constructive interference
+	if (damping_profile.size() != N) {
+		int sponge_width = params->sponge_width;
+        float max_damping = 0.5f;
+		damping_profile.resize(N, damping);
+		for (int i = 0; i < N; i++) {
+			if (i <= sponge_width) {
+            	float how_close = ((float) i) / ((float) sponge_width);
+            	damping_profile[i] = damping + (max_damping * powf(1.0f - how_close, 2));
+        	}
+	 	    else if (i >= N - sponge_width) {
+	        	float how_close = ((float) (N - 1 - i)) / ((float) sponge_width);
+	            damping_profile[i] = damping + (max_damping * powf(1.0f - how_close, 2));
+        	}
+		}
+	}
+
+
+    // Quadratic "sponge" damping at the ends of the chain to reduce artificial constructive interference
 	auto check_damping = [&](int idx) {
 		float local_damping;
 		int sponge_width = params->sponge_width;
@@ -53,12 +71,9 @@ void MinimizeEnergy(std::vector<Particle>& particles, Params* params) {
 
         if (idx <= sponge_width) {
             float how_close = ((float) idx) / ((float) sponge_width);
-            local_damping = damping + (max_damping * (1-how_close));
+            local_damping = damping + (max_damping * powf(1.0f - how_close, 2));
         }
-        else if (idx >= N - sponge_width) {
-            float how_close = ((float) (N - 1 - idx)) / ((float) sponge_width);
-            local_damping = damping + (max_damping * (1-how_close));
-        }
+
 		else {
 			local_damping = damping;
 		}
@@ -71,13 +86,14 @@ void MinimizeEnergy(std::vector<Particle>& particles, Params* params) {
         Vector3 CP = Vector3CrossProduct(S, H);
         Vector3 gilbert_damping = Vector3Scale(
             Vector3CrossProduct(S, CP),
-            -gamma * damping
+            -gamma * damping_profile[idx]
         );
         Vector3 dS = Vector3Add(torque, gilbert_damping);
 		return dS;
 	};
 
     // Calculate new spins after time step
+	#pragma omp parallel for
     for (int i = 0; i < N; i++) {
         Vector3 H = CalculateH_eff(i, particles, params);
         Vector3 S = particles[i].spin;
@@ -88,6 +104,7 @@ void MinimizeEnergy(std::vector<Particle>& particles, Params* params) {
     };
 
 	// Calculate derivative after another timestep and average them
+	#pragma omp parallel for
 	for (int i = 0; i < N; i++) {
 		Vector3 H = CalculateH_eff(i, predictions, params);
         Vector3 S = predictions[i].spin;
@@ -113,7 +130,7 @@ float getTotalEnergy(const std::vector<Particle>& particles, Params* params) {
         int wrap = (idx % N + N) % N;
         return particles[wrap].spin;
     };
-
+	#pragma omp parallel for reduction(+:result)
     for (int i = 0; i < N; i++) {
         Vector3 S = particles[i].spin;
 
