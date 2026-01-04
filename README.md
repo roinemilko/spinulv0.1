@@ -2,6 +2,7 @@
 A simulator to predict spin wave dispersion speed and magnon energy in frustrated Heisenberg models. Made for eduactional purposes. 
 
 ## TODO
+- Fix energy computed 2x
 - Update dependencies
 - Seperate simulation step from framerate for more interesting animation
 - Python script to run the simulation and plot the resulting heatmap
@@ -43,6 +44,24 @@ which is set by the user.
 
 A 3d animation of the spin vectors was created by the open source  [Raylib](https://www.raylib.com/) library as well as a GUI for controlling the parameters and displaying some live plots with the [ImGUI](https://github.com/ocornut/imgui) library. [rlImGui](https://github.com/raylib-extras/rlImGui) was used for the integration of these.
 
-## Further improvements
+## Results
+A ferromagnet was simulated by choosing $J_1 = -1.6\text{ meV}$ and $J_2 = -0.4 \text{ meV}$. I ended up measuring deviations from the ground state after a magnetic pulse of $B \approx 1.5\text{ mT}$ of length $0.5\text{ ps}$ was applied to a cone in the center. Processing-wise the only steps not happening in Datalogger class were: the heatmap was plotted in log-scale and 2D gaussian smoothing was applied in matlab.
 
-Right now the simulation is very numerically unstable and if let run for a long time will go to chaos. I initially suspected this was because of the way the borders of the chain are handled as a circular loop, creating infinite constructive interference of the waves. However adding a linear "sponge" to the damping coefficients of the sites near the ends did not have any effect so I think this is a numerical stability issue. In the future this simulation could also be expanded to handle, e.g. 2D triangular lattices instead of 1D chains. When the project is finished a pyhton API or a web app could be made to easily run and play with the simulation.
+| Raw signal             | Processed               |
+| ---------------------- | ---------------------- |
+| ![raw](images/ferromagnetv3_raw.jpg) | ![processed](images/ferromagnetv3_processed.jpg) |
+
+
+A frusturated system was simulated by choosing $J_1 = -1.6\text{ meV}$ and $J_2 = 0.440\text{ meV}$. Again the deviations from the ground state were measured after a magnetic pulse of $B \approx 1.5 \text{mT}$ was applied for $0.5\text{ ps}$. 
+| Raw signal             | Processed               |
+| ---------------------- | ---------------------- |
+| ![raw](images/frusturated_v3_raw.jpg) | ![processed](images/Frusturated_v3.jpg) |
+
+
+These results were even more noisy. This is likely to a poor stability of the ground state after the damping is removed or the fact that the ground state is not collinear. I tried to combat the latter by measuring the deviation from the ground state in the moment before the pulse is applied but that didn't work. 
+
+## Further improvements
+- More robust ground state finder by linerily wearing off the damping parameter.
+- Apply a linear or gaussian magnetic pulse to reduce noise from the instant dissapearance of the fiel
+- Figure out more ways to reduce the low frequency noise
+- Also support e.g. 2D triangular lattices
