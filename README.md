@@ -24,7 +24,7 @@ H_{\text{eff}} = -\frac{\partial \mathcal{H}}{\partial S_i} \approx -J_1 (S_{i-1
 For example, an frusturated material like $LiCuVO_4$ could have coupling factors $J_1 \approx -1.6 \text{ meV}$ and $J_2 \approx 0.44 \text{ meV}$: The nearest neigbour coupling is ferromagnetic while the next nearest neighbour coupling is antiferromagnetic, causing a spiral-like ground state structure where all terms of the hamiltonian can't be minimized simultaniously. In the simulation we will find the approximate ground state of the system and introduce an external magnetic field to a disk of some radius in the center of the lattice to initiate a spin wave. We will then look at the components of the spins in the direction of the external field $S_z(i, t)$: By taking a fourier transform of this we should find the dispersion relation $\omega(k)$ and the energy of the magnon.  
 
 ## Simulation
-To calculate the direction of each spin we use simple Euler integration: For each site calculate $H_{\text{eff}}$, calculate $dS$ for some small time step $dt$ and add it to the current spin. The simulation itself consists of two stages: 
+To calculate the direction of each spin we use the following integrator: For each site calculate $H_{\text{eff}}$, calculate $dS$ for some small time step $dt$. Then add it to the spin and calculate again $dS'$ for a small time step. Then take the normalized average of $dS$ and $dS'$ and add it to the original spin. This is called the predictor-corrector method and I found it to be most numerically stable. The simulation itself consists of two stages: 
 - Finding the ground state
 - Measuring the spin wave
 
