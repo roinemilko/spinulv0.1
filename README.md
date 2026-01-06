@@ -1,5 +1,5 @@
 # spinulv0.1
-A simulator to predict spin wave dispersion speed and magnon energy in frustrated Heisenberg models. Made for eduactional purposes. 
+A simulator to predict spin wave dispersion and magnon energy in Heisenberg models. Made for eduactional purposes. 
 
 ## TODO
 - Fix energy computed 2x
@@ -62,6 +62,6 @@ These results were even more noisy. This is likely to a poor stability of the gr
 
 ## Further improvements
 - More robust ground state finder by linerily wearing off the damping parameter.
-- Apply a linear or gaussian magnetic pulse to reduce noise from the instant dissapearance of the fiel
+- Apply a linear or gaussian magnetic pulse to reduce noise from the instant dissapearance of the field
 - Figure out more ways to reduce the low frequency noise
 - Also support e.g. 2D triangular lattices
