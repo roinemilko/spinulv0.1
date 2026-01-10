@@ -18,14 +18,15 @@ struct Params {
     float external_field = 0; // mT
     float external_field_radius = 5.0f;
     float ext_field_pulse_lenght = 0.5f;  // picoseconds
+    float ext_field_sigma = 4.0f;
     bool ext_field_on = false;
     const float hbar = 0.6582; // meV * picoseconds
     float damping = 0.3f; // the damping coefficient
     float gm_ratio = 2;
     float bohr_magneton = 0.05788;
-    int sponge_width = 5; // the width of the "sponge" at the ends in number of sites
+    int sponge_width = 10; // the width of the "sponge" at the ends in number of sites
     float energy_resolution = 0.003f;
-    float window_param = 0.2f;
+    float window_param = 0.1f;
 };
 
 struct Particle {

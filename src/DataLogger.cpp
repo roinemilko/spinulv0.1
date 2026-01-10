@@ -72,7 +72,7 @@ void DataLogger::analyze(Params* params) {
 
 	printf("Saving results...\n");
     // Print results to a csv file
-    FILE* filePtr = fopen("result2.csv", "w");
+    FILE* filePtr = fopen("result_big3.csv", "w");
     if (filePtr == nullptr) {
         perror("Couldn't create result.csv");
     }

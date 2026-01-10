@@ -26,6 +26,7 @@ int main(void) {
 	std::vector<float> spinZPlot;
     float current_time = 0.0f;
     DataLogger* logger = nullptr;
+    float rec_start_time = 0.0f;
     float rec_end_time = 0.0f;
 	int steps_per_frame = 1;
 	int rec_counter = 0;
@@ -48,8 +49,8 @@ int main(void) {
                 	MinimizeEnergy(particles, &params);
 
                     // Record and analyze data
-                    if (rec_end_time != 0.0f) {
-                        if (current_time < rec_end_time && rec_counter == 100) {
+                    if ((rec_end_time != 0.0f) && (current_time >= rec_start_time)) {
+                        if (current_time < rec_end_time && rec_counter == 50) {
                             logger->listen(spinZPlot, &params);
 							rec_counter = 0;
                         }
@@ -168,11 +169,10 @@ int main(void) {
 	                        printf("Done!\n");
 	                        params.ext_field_on = false;
 	                        float recording_time = (2 * M_PI * params.hbar) / params.energy_resolution;
-							printf("Starting recording...\n");
-							printf("Recording time: %f.2\n", recording_time);
 	                        int size_hint = (int) (recording_time / params.dt_ps);
 	                        rec_end_time = current_time + recording_time;
-							printf("Recording from %f.2 to %f.2...\n", current_time, current_time + recording_time);
+                            rec_start_time = current_time + 20.0f;
+							printf("Recording from %f.2 to %f.2...\n", rec_start_time, rec_end_time);
 							logger = new DataLogger(size_hint, ground_state);
 
 	                    }

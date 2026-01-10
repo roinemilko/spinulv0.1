@@ -27,7 +27,11 @@ Vector3 CalculateH_eff(int i, const std::vector<Particle>& particles, Params* pa
 
     // Zeeman term
     if (particles[i].pos.x >= (50.0f - params->external_field_radius) && particles[i].pos.x <= (50.0f + params->external_field_radius) && params->ext_field_on) {
-        Vector3 zeemann = Vector3Scale((Vector3) {0.0f, 0.0f, params->external_field}, params->gm_ratio * params->bohr_magneton);
+        float dist = particles[i].pos.x - 50.0f;
+        float sigma = params->external_field_radius / params->ext_field_sigma;
+        float gaussian = expf( -powf(dist, 2) / (2.0f * sigma * sigma) );
+
+        Vector3 zeemann = Vector3Scale((Vector3) {0.0f, 0.0f, params->external_field * gaussian}, params->gm_ratio * params->bohr_magneton);
         H = Vector3Add(H, zeemann);
     }
 
