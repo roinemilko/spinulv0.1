@@ -41,7 +41,10 @@ which is set by the user.
 
 ## Visualization
 
-A 3d animation of the spin vectors was created by the open source  [Raylib](https://www.raylib.com/) library as well as a GUI for controlling the parameters and displaying some live plots with the [ImGUI](https://github.com/ocornut/imgui) library. [rlImGui](https://github.com/raylib-extras/rlImGui) was used for the integration of these.
+A 3d animation of the spin vectors was created by the open source  [Raylib](https://www.raylib.com/) library as well as a GUI for controlling the parameters and displaying some live plots with the [ImGUI](https://github.com/ocornut/imgui) library. [rlImGui](https://github.com/raylib-extras/rlImGui) was used for the integration of these. Images of visualization
+| Ferromagnet, 1000 sites        | Frusturated, 100 sites               |
+| ---------------------- | ---------------------- |
+| ![raw](images/work_in_progress.png) | ![processed](images/work_in_progress_2.png) 
 
 ## Results
 A ferromagnet was simulated by choosing $J_1 = -1.6\text{ meV}$ and $J_2 = -0.4 \text{ meV}$. I ended up measuring deviations from the ground state after a magnetic pulse of $B \approx 1.5\text{ mT}$ of length $0.5\text{ ps}$ was applied to a cone in the center. Processing-wise the only steps not happening in Datalogger class were: the heatmap was plotted in log-scale and 2D gaussian smoothing was applied in matlab.
@@ -60,9 +63,9 @@ A frusturated system was simulated by choosing $J_1 = -1.6\text{ meV}$ and $J_2 
 These results were even more noisy. This is likely to a poor stability of the ground state after the damping is removed or the fact that the ground state is not collinear. I tried to combat the latter by measuring the deviation from the ground state in the moment before the pulse is applied but that didn't work. 
 
 To reduce noise I tried an frusturated system that had very high coupling constants. This should result in more stable spirals and less noise so the waves could be observed at much lower frequencies. 
-|             |                |
+|          |        |
 | ---------------------- | ---------------------- |
-| ![raw](images/one_more.jpg) | ![processed](images/just_one_more.jpg) 
+| ![raw](images/one_more.jpg) | ![processed](images/just_one_more.jpg) |
 
 The signal is clearly less noisy but does not correspod to the theoretical curve very well as there is a linear shift and the parabolic shape seems to be much sharper. The minima however seems to be in the right place. There are sinusoidal looking artifacts in-between the dispersion branches. I suspect these have to do with the boundaries and reflecting waves.   
 
