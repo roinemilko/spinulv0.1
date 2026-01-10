@@ -1,5 +1,5 @@
 # spinulv0.1
-A simulator to predict spin wave dispersion and magnon energy in Heisenberg models. Made for eduactional purposes. 
+A simulator to predict spin wave dispersion in Heisenberg models. Made for eduactional purposes. 
 
 ## TODO
 - Update dependencies
@@ -20,7 +20,7 @@ where $\gamma$ is the gyromagnetic ratio, $\alpha_D$ is a phenomenological dampi
 ```math
 H_{\text{eff}} = -\frac{\partial \mathcal{H}}{\partial S_i} \approx -J_1 (S_{i-1} + S_{i + 1}) - J_2 (S_{i-2} + S_{i+2}) + \gamma \mu_B B_{i}(t)
 ```
-For example, an frusturated material like $LiCuVO_4$ could have coupling factors $J_1 \approx -1.6 \text{ meV}$ and $J_2 \approx 0.44 \text{ meV}$: The nearest neigbour coupling is ferromagnetic while the next nearest neighbour coupling is antiferromagnetic, causing a spiral-like ground state structure where all terms of the hamiltonian can't be minimized simultaniously. In the simulation we will find the approximate ground state of the system and introduce an external magnetic field to a disk of some radius in the center of the lattice to initiate a spin wave. We will then look at the components of the spins in the direction of the external field $S_z(i, t)$: By taking a fourier transform of this we should find the dispersion relation $\omega(k)$ and the energy of the magnon.  
+For example, an frusturated material like $LiCuVO_4$ could have coupling factors $J_1 \approx -1.6 \text{ meV}$ and $J_2 \approx 0.44 \text{ meV}$: The nearest neigbour coupling is ferromagnetic while the next nearest neighbour coupling is antiferromagnetic, causing a spiral-like ground state structure where all terms of the hamiltonian can't be minimized simultaniously. In the simulation we will find the approximate ground state of the system and introduce an external magnetic field to a disk of some radius in the center of the lattice to initiate a spin wave. We will then look at the components of the spins in the direction of the external field $S_z(i, t)$: By taking a fourier transform of this we should find the dispersion relation $\omega(k)$ and the energy of the magnon. For efficient discrete FFT:s of large matrices we use the [fftw](https://fftw.org/) library.
 
 ## Simulation
 To calculate the direction of each spin we use the following integrator: For each site calculate $H_{\text{eff}}$, calculate $dS$ for some small time step $dt$. Then add it to the spin and calculate again $dS'$ for a small time step. Then take the normalized average of $dS$ and $dS'$ and add it to the original spin. This is called the predictor-corrector method and I found it to be most numerically stable. The simulation itself consists of two stages: 
@@ -33,7 +33,7 @@ E = \sum_i J_11(S_i \cdot S_{i+1}) + J_2(S_i \cdot S_{i+2}) - S_i \cdot B_i (t)
 ```
 When this energy remains somewhat constant we have found the ground state.
 
-In the second stage we start the internal clock of the simulation and reduce the damping coefficient and the time step to be very small ($\alpha_D = 0.0005$ and $dt = 0.01 \text{ps}$). This allows for Lamor precession and thus observing the spin waves (while keeping some damping to keep the simulation at least somewhat numerically stable). The user can then add an external magnetic field of any flux density affecting in a disk of a fixed radius around the center in the z-direction. This will trigger the plotting of spin components in the z direction. The detection time $T$ is defined by the desired frequency resolution
+In the second stage we start the internal clock of the simulation and reduce the damping coefficient and the time step to be very small ($\alpha_D = 0.0005$ and $dt = 0.01 \text{ps}$). This allows for precession and thus observing the spin waves (while keeping some damping to keep the simulation at least somewhat numerically stable). The user can then add an external magnetic field of any flux density affecting in a disk of a fixed radius around the center in the z-direction. This will trigger the plotting of spin components in the z direction. The detection time $T$ is defined by the desired frequency resolution
 ```math
 \Delta \omega = \frac{2\pi}{T}
 ```
@@ -59,8 +59,13 @@ A frusturated system was simulated by choosing $J_1 = -1.6\text{ meV}$ and $J_2 
 
 These results were even more noisy. This is likely to a poor stability of the ground state after the damping is removed or the fact that the ground state is not collinear. I tried to combat the latter by measuring the deviation from the ground state in the moment before the pulse is applied but that didn't work. 
 
+To reduce noise I tried an frusturated system that had very high coupling constants. This should result in more stable spirals and less noise so the waves could be observed at much lower frequencies. 
+|             |                |
+| ---------------------- | ---------------------- |
+| ![raw](images/one_more.jpg) | ![processed](images/just_one_more.jpg) 
+
+The signal is clearly less noisy but does not correspod to the theoretical curve very well as there is a linear shift and the parabolic shape seems to be much sharper. The minima however seems to be in the right place. There are sinusoidal looking artifacts in-between the dispersion branches. I suspect these have to do with the boundaries and reflecting waves.   
+
 ## Further improvements
-- More robust ground state finder by linerily wearing off the damping parameter.
-- Apply a linear or gaussian magnetic pulse to reduce noise from the instant dissapearance of the field
-- Figure out more ways to reduce the low frequency noise
+- More robust ground state finder
 - Also support e.g. 2D triangular lattices
