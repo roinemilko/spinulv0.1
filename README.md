@@ -1,5 +1,5 @@
 # spinulv0.1
-A simulator to predict spin wave dispersion in Heisenberg models. Made for eduactional purposes. 
+A simulator to predict spin wave dispersion in Heisenberg models. Made for learning purposes. 
 
 ## TODO
 - Update dependencies
@@ -12,7 +12,7 @@ We use the Heisenberg model to describe a lattice of spins set on discrete sites
 \mathcal{H} = \sum_{i\neq j} J_{i,j}\,\,(S_i \cdot S_j) - \sum_{i} g_i \mu_{B}\,\,(S_i \cdot B_{i}(t))
 ```
 
-where $S_i \in \mathbb{R}^3$ is the spin vector on the i:th site, $J_{i,j}$ is the coupling factor between the spins on site $i$ and site $j$, $\mu_{B}$ is the Bohr magneton and $g_i$ is the g-factor (dimentionless gyromagnetic ratio for which we use $g\approx 2$ to approximate free electrons). $B(t)$ is the flux density of any external magnetic field applied to the system. The time development of each spin vector can then be described by the Landau–Lifshitz equation as
+where $S_i \in \mathbb{R}^3$ is the spin vector on the i:th site, $J_{i,j}$ is the coupling factor between the spins on site $i$ and site $j$, $\mu_{B}$ is the Bohr magneton and $g_i$ is the g-factor ($g\approx 2$ to approximate free electrons). $B(t)$ is the flux density of any external magnetic field applied to the system. The time development of each spin vector can then be described by the Landau–Lifshitz equation as
 ```math
 \frac{dS_i}{dt} = -\gamma(S_i \times H_{\text{eff}}) - \gamma \alpha_D \Big( S_i\times (S_i \times H_{\text{eff}}) \Big)
 ```
